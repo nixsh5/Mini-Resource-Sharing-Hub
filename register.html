@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #F6F4F8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Top Elements */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2D2B33;
+        }
+
+        /* Register Form */
+        .register-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #2D2B33;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 2px solid #CFC2D3;
+            font-size: 1rem;
+            background: transparent;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-bottom: 2px solid #6A4C93;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4C3B6E;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #382A50;
+        }
+
+        p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        a {
+            color: #6A4C93;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="logo">YourLogo</div>
+</div>
+
+<!-- Register Box -->
+<div class="register-container">
+    <h2>Register</h2>
+    <form id="registerForm">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="login.html">Login</a></p>
+
+    <p id="reg-error-message" class="error-message"></p>
+</div>
+
+<script type="module">
+    import { registerWithEmail } from "./firebase.js";
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("reg-email").value;
+        const password = document.getElementById("reg-password").value;
+
+        try {
+            await registerWithEmail(email, password);
+            alert("Registration successful! You can now log in.");
+            window.location.href = "login.html";
+        } catch (error) {
+            document.getElementById("reg-error-message").innerText = error.message;
+        }
+    });
+</script>
+
+</body>
+</html>

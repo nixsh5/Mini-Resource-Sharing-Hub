@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Resources - CampusShare</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .upload-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-input-label:hover, .file-input-label-active {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .file-info.active {
+            display: block;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-name {
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progress-container {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .upload-options {
+            margin-top: 1.5rem;
+        }
+
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            width: 100%;
+        }
+
+        .upload-btn:hover {
+            background-color: #3a5bef;
+        }
+
+        .upload-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            margin: 0 1rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .auth-buttons button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .auth-buttons button:hover {
+            background-color: #3a5bef;
+        }
+
+        #login-btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        #user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        #username-display {
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+<div id="app">
+    <header>
+        <div class="logo">
+            <h1>Campus<span>Share</span></h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#browse" class="nav-link">Browse</a></li>
+                <li><a href="index.html#add-item" class="nav-link">Share Item</a></li>
+                <li><a href="upload.html" class="nav-link active">Upload Files</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <button id="login-btn">Login</button>
+            <button id="register-btn">Register</button>
+            <div id="user-profile" class="hidden">
+                <span id="username-display"></span>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="upload-container">
+            <h2>Upload Resource Files</h2>
+            <p>Share digital resources with your fellow students. Upload PDFs, documents, presentations, or other educational materials.</p>
+
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="resource-title">Resource Title</label>
+                    <input type="text" id="resource-title" required placeholder="Enter a descriptive title for your resource">
+                </div>
+
+                <div class="form-group">
+                    <label for="resource-description">Description</label>
+                    <textarea id="resource-description" rows="3" required placeholder="Describe what this resource contains and how it might be useful"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="resource-category">Category</label>
+                    <select id="resource-category" required>
+                        <option value="">Select a category</option>
+                        <option value="notes">Lecture Notes</option>
+                        <option value="assignments">Assignments</option>
+                        <option value="textbooks">Textbooks</option>
+                        <option value="presentations">Presentations</option>
+                        <option value="study-guides">Study Guides</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="resource-course">Course (Optional)</label>
+                    <input type="text" id="resource-course" placeholder="e.g., CS101, Biology 202, etc.">
+                </div>
+
+                <div class="file-input-container">
+                    <label for="file-upload" class="file-input-label">
+                        <div class="file-icon">📄</div>
+                        <span>Click to select a file or drag and drop</span>
+                        <small>Max file size: 10MB</small>
+                    </label>
+                    <input type="file" id="file-upload" class="file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip">
+                </div>
+
+                <div id="file-info" class="file-info">
+                    <div class="file-preview">
+                        <span class="file-icon">📄</span>
+                        <span id="file-name" class="file-name"></span>
+                    </div>
+                    <div id="file-size" class="file-size"></div>
+                </div>
+
+                <div id="progress-container" class="progress-container">
+                    <p>Uploading...</p>
+                    <div class="progress-bar">
+                        <div id="progress" class="progress"></div>
+                    </div>
+                </div>
+
+                <div class="upload-options">
+                    <button type="submit" id="upload-btn" class="upload-btn" disabled>Upload Resource</button>
+                </div>
+            </form>
+
+            <a href="index.html" class="back-link">← Back to Home</a>
+        </div>
+    </main>
+
+    <!-- Modal for Login -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="upload-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Register -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create an Account</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm">Confirm Password</label>
+                    <input type="password" id="register-confirm" required>
+                </div>
+                <button type="submit" class="upload-btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            // REPLACE WITH YOUR FIREBASE CONFIG
+            apiKey: "AIzaSyCmzWJmp3MSENgX_wZLNm34RftilRjeVRo",
+            authDomain: "resource-sharing-hub.firebaseapp.com",
+            projectId: "resource-sharing-hub",
+            storageBucket: "resource-sharing-hub", // Fixed incorrect URL
+            messagingSenderId: "500349654322",
+            appId: "1:500349654322:web:09f6154c08930beb18732b",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the storage service
+        const storage = firebase.storage();
+
+        // DOM Elements
+        const fileInput = document.getElementById('file-upload');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadForm = document.getElementById('upload-form');
+        const progressContainer = document.getElementById('progress-container');
+        const progress = document.getElementById('progress');
+
+        // Auth elements
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userProfile = document.getElementById('user-profile');
+        const usernameDisplay = document.getElementById('username-display');
+        const loginModal = document.getElementById('login-modal');
+        const registerModal = document.getElementById('register-modal');
+        const closeButtons = document.querySelectorAll('.close');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        // Get user data from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles')) || [];
+
+        // Initialize
+        function init() {
+            updateAuthUI();
+            setupEventListeners();
+        }
+
+        // Update auth UI
+        function updateAuthUI() {
+            if (currentUser) {
+                loginBtn.classList.add('hidden');
+                registerBtn.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                usernameDisplay.textContent = currentUser.name;
+            } else {
+                loginBtn.classList.remove('hidden');
+                registerBtn.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+
+        // Modal functions
+        function openModal(modal) {
+            modal.style.display = 'block';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        // User registration
+        function registerUser(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm').value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            if (users.some(user => user.email === email)) {
+                alert('Email already registered!');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: generateId(),
+                name,
+                email,
+                password // In a real app, this should be hashed
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Auto login
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            updateAuthUI();
+            closeModal(registerModal);
+            registerForm.reset();
+
+            alert('Registration successful!');
+        }
+
+        // User login
+        function loginUser(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const user = users.find(user => user.email === email && user.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateAuthUI();
+                closeModal(loginModal);
+                loginForm.reset();
+            } else {
+                alert('Invalid email or password!');
+            }
+        }
+
+        // User logout
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateAuthUI();
+            window.location.href = 'index.html';
+        }
+
+        // File upload handling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File is too large. Maximum size is 10MB.');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Display file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.add('active');
+                uploadBtn.disabled = false;
+            } else {
+                fileInfo.classList.remove('active');
+                uploadBtn.disabled = true;
+            }
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Handle form submission
+        function handleUpload(event) {
+            event.preventDefault();
+
+            //if (!currentUser) {
+              //  alert('Please log in to upload files.');
+                //openModal(loginModal);
+                //return;
+           // }
+
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const title = document.getElementById('resource-title').value;
+            const description = document.getElementById('resource-description').value;
+            const category = document.getElementById('resource-category').value;
+            const course = document.getElementById('resource-course').value;
+
+            progressContainer.classList.add('active');
+            uploadBtn.disabled = true;
+
+            // Create a storage reference
+            const storageRef = storage.ref('uploads/' + file.name);
+
+            // Upload the file
+            const uploadTask = storageRef.put(file);
+
+            // Listen for state changes, errors, and completion of the upload.
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Get task progress, including the number of bytes uploaded
+                    const progressValue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progress.style.width = progressValue + '%';
+                },
+                (error) => {
+                    // Handle unsuccessful uploads
+                    console.error("Upload error:", error);
+                    alert('Upload failed: ' + error.message);
+                    progressContainer.classList.remove('active');
+                    uploadBtn.disabled = false;
+                },
+                () => {
+                    // Handle successful uploads on complete
+                    // Get download URL
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        // Store metadata and download URL
+                        const uploadedFile = {
+                            id: generateId(),
+                            title,
+                            description,
+                            category,
+                            course,
+                            fileName: file.name,
+                            fileSize: formatFileSize(file.size),
+                            fileType: file.type,
+                            uploadDate: new Date().toISOString(),
+                            uploaderId: currentUser.id,
+                            uploaderName: currentUser.name,
+                            downloadURL: downloadURL,
+                        };
+
+                        uploadedFiles.push(uploadedFile);
+                        localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+
+                        alert('File uploaded successfully!');
+                        uploadForm.reset();
+                        fileInfo.classList.remove('active');
+                        progressContainer.classList.remove('active');
+                        progress.style.width = '0%';
+                        uploadBtn.disabled = true;
+                        window.location.href = 'index.html#browse';
+                    });
+                }
+            );
+        }
+
+        // Helper function to generate ID
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // File input
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            const dropZone = document.querySelector('.file-input-label');
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('file-input-label-active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('file-input-label-active');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('file-input-label-active');
+
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+
+            // Form submission
+            uploadForm.addEventListener('submit', handleUpload);
+
+            // Auth buttons
+            if (loginBtn) loginBtn.addEventListener('click', () => openModal(loginModal));
+            if (registerBtn) registerBtn.addEventListener('click', () => openModal(registerModal));
+            if (logoutBtn) logoutBtn.addEventListener('click', logoutUser);
+
+            // Close buttons for modals
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modal = button.closest('.modal');
+                    closeModal(modal);
+                });
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeModal(e.target);
+                }
+            });
+
+            // Forms
+            if (loginForm) loginForm.addEventListener('submit', loginUser);
+            if (registerForm) registerForm.addEventListener('submit', registerUser);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

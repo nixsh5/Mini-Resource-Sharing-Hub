@@ -1,8 +1,42 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
 }
+
+
+.intro-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 2rem; /* Increased bottom margin for spacing */
+    color: #555; /* Softer black */
+    max-width: 800px; /* Wider text area for better readability */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    border-radius: 10px; /* Soft rounded corners */
+    background-color: #ffffff; /* White background for the text area */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.intro-text strong {
+    font-weight: bold;
+    color: #ff6f61;  /* Accent color for emphasis */
+}
+
+/* Add a softer, more natural look on smaller screens */
+@media (max-width: 768px) {
+    .intro-text {
+        font-size: 1rem;
+        padding: 0 15px;
+        margin-bottom: 1.2rem; /* Smaller margins on mobile for better fitting */
+    }
+}
+
 
 .navbar {
     background: #007BFF;

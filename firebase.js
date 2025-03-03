@@ -1,14 +1,19 @@
 // Import Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-// Your Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCmzWJmp3MSENgX_wZLNm34RftilRjeVRo",
     authDomain: "resource-sharing-hub.firebaseapp.com",
     projectId: "resource-sharing-hub",
-    storageBucket: "resource-sharing-hub.firebasestorage.app",
+    storageBucket: "resource-sharing-hub.appspot.com", // Fixed incorrect URL
     messagingSenderId: "500349654322",
     appId: "1:500349654322:web:09f6154c08930beb18732b",
     measurementId: "G-ZBTH0SN9DL"
@@ -18,33 +23,41 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
-// Google Sign-In Function
-const signInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            console.log("User signed in:", result.user);
-            window.location.href = "profile.html"; // Redirect after login
+// 🔹 Function to Log in with Email & Password
+const loginWithEmail = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Logged in:", userCredential.user);
+            window.location.href = "dashboard.html"; // Redirect
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => {
+            console.error("Login Error:", error.message);
+            throw error;
+        });
 };
 
-// Logout Function
+// 🔹 Function to Register with Email & Password
+const registerWithEmail = (email, password) => {
+    return createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Registered:", userCredential.user);
+        })
+        .catch((error) => {
+            console.error("Registration Error:", error.message);
+            throw error;
+        });
+};
+
+// 🔹 Function to Log Out
 const logOut = () => {
-    signOut(auth).then(() => {
-        console.log("User logged out");
-        window.location.href = "index.html"; // Redirect to home after logout
-    });
+    signOut(auth)
+        .then(() => {
+            console.log("User logged out");
+            window.location.href = "index.html"; // Redirect after logout
+        })
+        .catch((error) => console.error("Logout Error:", error.message));
 };
 
-// Listen for authentication state changes
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        console.log("User is signed in:", user);
-    } else {
-        console.log("No user signed in.");
-    }
-});
-
-export { auth, signInWithGoogle, logOut };
+// Export functions
+export { auth, loginWithEmail, registerWithEmail, logOut };

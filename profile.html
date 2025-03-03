@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Resource Hub</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="logo">Resource Hub</a>
+  <div class="nav-links">
+    <a href="resources.html">Resources</a>
+    <a href="upload.html">Upload</a>
+    <a href="profile.html">Profile</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+<main>
+  <h1>User Profile</h1>
+  <p id="user-info">Loading user data...</p>
+  <button id="logout">Log Out</button>
+</main>
+
+<script type="module">
+  import { auth, logOut } from "./firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("user-info").innerHTML = `
+                    <p>Name: ${user.displayName}</p>
+                    <p>Email: ${user.email}</p>
+                    <img src="${user.photoURL}" alt="Profile" width="50">
+                `;
+    } else {
+      document.getElementById("user-info").innerHTML = "<p>Please log in.</p>";
+    }
+  });
+
+  document.getElementById("logout").addEventListener("click", logOut);
+</script>
+</body>
+</html>

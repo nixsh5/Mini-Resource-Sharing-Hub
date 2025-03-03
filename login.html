@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Resource Hub</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="logo">Resource Hub</a>
+  <div class="nav-links">
+    <a href="resources.html">Resources</a>
+    <a href="upload.html">Upload</a>
+    <a href="profile.html">Profile</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+<main>
+  <h1>Login</h1>
+  <button id="google-login">Sign in with Google</button>
+</main>
+
+<script type="module">
+  import { signInWithGoogle } from "./firebase.js";
+  document.getElementById("google-login").addEventListener("click", signInWithGoogle);
+</script>
+</body>
+</html>
